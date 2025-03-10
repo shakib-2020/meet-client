@@ -1,9 +1,10 @@
+/* eslint-disable react-native/no-inline-styles */
 import {
   Image,
   SafeAreaView,
   ScrollView,
-  StyleSheet,
   Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import React, {useEffect, useState} from 'react';
@@ -14,7 +15,18 @@ import {RTCView, mediaDevices} from 'react-native-webrtc';
 import {prepareStyles} from '../styles/prepareStyles';
 import {addHyphens, requestPermissions} from '../utils/Helpers';
 import {goBack, replace} from '../utils/NavigationUtils';
-import {ChevronLeft, EllipsisVertical} from 'lucide-react-native';
+import {
+  ChevronLeft,
+  EllipsisVertical,
+  Info,
+  Mic,
+  MicOff,
+  MonitorUp,
+  Share,
+  Shield,
+  Video,
+  VideoOff,
+} from 'lucide-react-native';
 import {RFValue} from 'react-native-responsive-fontsize';
 import {Colors} from '../utils/Constants';
 const PrepareMeetScreen = () => {
@@ -28,7 +40,7 @@ const PrepareMeetScreen = () => {
 
   useEffect(() => {
     const handleParticipantUpdate = updatedParticipants => {
-      setParticipants(updatedParticipants);
+      setParticipants(updatedParticipants.participants);
     };
     on('session-info', handleParticipantUpdate);
     return () => {
@@ -40,11 +52,14 @@ const PrepareMeetScreen = () => {
       setLocalStream(null);
       off('session-info', handleParticipantUpdate);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sessionId, emit, on, off]);
 
   const showMediaDevices = (audio, video) => {
+    console.log('audio, video', {audio, video});
+
     mediaDevices
-      ?.getDisplayMedia({
+      ?.getUserMedia({
         audio,
         video,
       })
@@ -53,12 +68,14 @@ const PrepareMeetScreen = () => {
         const audioTrack = stream.getAudioTracks()[0];
         const videoTrack = stream.getVideoTracks()[0];
 
+        console.log('audioTrack, videoTrack', {audioTrack, videoTrack});
+
         if (audioTrack) {
-          audioTrack.enabled = audio;
+          audioTrack._enabled = audio;
         }
 
         if (videoTrack) {
-          videoTrack.enabled = audio;
+          videoTrack._enabled = video;
         }
       })
       .catch(err => {
@@ -69,9 +86,8 @@ const PrepareMeetScreen = () => {
   const toggleMicState = newState => {
     if (localStream) {
       const audioTrack = localStream.getAudioTracks()[0];
-
       if (audioTrack) {
-        audioTrack.enabled = newState;
+        audioTrack._enabled = newState;
       }
     }
   };
@@ -80,8 +96,8 @@ const PrepareMeetScreen = () => {
     if (localStream) {
       const videoTrack = localStream.getVideoTracks()[0];
 
-      if (audioTrack) {
-        videoTrack.enabled = newState;
+      if (videoTrack) {
+        videoTrack._enabled = newState;
       }
     }
   };
@@ -115,6 +131,7 @@ const PrepareMeetScreen = () => {
   useEffect(() => {
     fatchMediaPermission();
     console.log('inside', sessionId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const handleStartCall = async () => {
@@ -137,7 +154,7 @@ const PrepareMeetScreen = () => {
 
   const renderParticipantText = () => {
     if (participants?.length === 0) {
-      return 'No one is in the call yer';
+      return 'No one is in the call yet';
     }
 
     const name = participants
@@ -163,6 +180,7 @@ const PrepareMeetScreen = () => {
         />
         <EllipsisVertical size={RFValue(18)} color={Colors.text} />
       </View>
+
       <ScrollView contentContainerStyle={{flex: 1}}>
         <View style={prepareStyles.videoContainer}>
           <Text style={prepareStyles.meetingCode}>{addHyphens(sessionId)}</Text>
@@ -177,13 +195,69 @@ const PrepareMeetScreen = () => {
             ) : (
               <Image source={{uri: user?.photo}} style={prepareStyles?.image} />
             )}
+
+            <View style={prepareStyles.toggleContainer}>
+              <TouchableOpacity
+                onPress={() => toggleLocal('mic')}
+                style={prepareStyles.iconButton}>
+                {micOn ? (
+                  <Mic size={RFValue(12)} color={'#fff'} />
+                ) : (
+                  <MicOff size={RFValue(12)} color={'#fff'} />
+                )}
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => toggleLocal('video')}
+                style={prepareStyles.iconButton}>
+                {videoOn ? (
+                  <Video size={RFValue(12)} color={'#fff'} />
+                ) : (
+                  <VideoOff size={RFValue(12)} color={'#fff'} />
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+          <TouchableOpacity style={prepareStyles.buttonContainer}>
+            <MonitorUp size={RFValue(14)} color={Colors.primary} />
+            <Text style={prepareStyles.buttonText}>Share Screen</Text>
+          </TouchableOpacity>
+
+          <Text style={prepareStyles.peopleText}>
+            {renderParticipantText()}
+          </Text>
+        </View>
+        <View style={prepareStyles.infoContainer}>
+          <View style={prepareStyles.flexRowBetween}>
+            <Info size={RFValue(14)} color={Colors.text} />
+            <Text style={prepareStyles.joiningText}>Joining information</Text>
+            <Share size={RFValue(14)} color={Colors.text} />
+          </View>
+
+          <View style={{marginLeft: 38}}>
+            <Text style={prepareStyles.linkHeader}>Meeting Link</Text>
+            <Text style={prepareStyles.linkText}>
+              meet.google.com/{addHyphens(sessionId)}
+            </Text>
+          </View>
+
+          <View style={prepareStyles.flexRow}>
+            <Shield size={RFValue(14)} color={Colors.text} />
+            <Text style={prepareStyles.encryptionText}>Encryption</Text>
           </View>
         </View>
       </ScrollView>
+      <View style={prepareStyles.joinContainer}>
+        <TouchableOpacity
+          style={prepareStyles.joinButton}
+          onPress={handleStartCall}>
+          <Text style={prepareStyles.joinButtonText}>Join</Text>
+        </TouchableOpacity>
+
+        <Text style={prepareStyles.noteText}>Joining as</Text>
+        <Text style={prepareStyles.peopleText}>{user?.name}</Text>
+      </View>
     </View>
   );
 };
 
 export default PrepareMeetScreen;
-
-const styles = StyleSheet.create({});

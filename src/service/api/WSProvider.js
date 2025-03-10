@@ -1,3 +1,4 @@
+import React from 'react';
 import {createContext, useContext, useEffect, useRef} from 'react';
 import {SOCKET_URL} from '../config';
 import {io} from 'socket.io-client';

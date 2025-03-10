@@ -9,6 +9,11 @@ export const useLiveMeetStore = create()(
     // chatMessages: [],
     micOn: false,
     videoOn: false,
+    clear: () =>
+      set({
+        sessionId: null,
+        participants: [],
+      }),
     addSessionId: id => {
       set({sessionId: id});
     },
@@ -56,7 +61,7 @@ export const useLiveMeetStore = create()(
 
     toggle: type => {
       if (type === 'mic') {
-        set(state => ({maicOn: !state.micOn}));
+        set(state => ({micOn: !state.micOn}));
       } else {
         set(state => ({videoOn: !state.videoOn}));
       }

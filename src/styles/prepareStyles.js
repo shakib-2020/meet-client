@@ -1,7 +1,6 @@
-import { Platform, StyleSheet } from 'react-native';
+import {Platform, StyleSheet} from 'react-native';
 import {Colors, screenHeight, screenWidth} from '../utils/Constants';
 import {RFValue} from 'react-native-responsive-fontsize';
-
 
 export const prepareStyles = StyleSheet.create({
   image: {
