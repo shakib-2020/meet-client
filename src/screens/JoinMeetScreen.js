@@ -43,7 +43,10 @@ const JoinMeetScreen = () => {
     }
   };
   const joinViaSessionId = async () => {
-    const isAvailabe = await checkSession();
+    const isAvailabe = await checkSession(removeHyphens(code));
+    console.log('Submit pressed', code);
+    console.log(isAvailabe);
+
     if (isAvailabe) {
       emit('prepare-session', {
         userId: user?.id,
@@ -102,7 +105,9 @@ const JoinMeetScreen = () => {
           onChangeText={setCode}
           returnKeyLabel="Join"
           returnKeyType="join"
-          onSubmitEditing={() => joinViaSessionId()}
+          onSubmitEditing={() => {
+            joinViaSessionId();
+          }}
           placeholder="Example: abc-mnop-xyz"
           placeholderTextColor={'#888'}
         />

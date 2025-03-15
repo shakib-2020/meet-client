@@ -10,5 +10,5 @@ import {Platform} from 'react-native';
 // export const SOCKET_URL = 'wss://meet-server.com';
 
 // USE YOUR LOCAL IP ADDRESS
-export const BASE_URL = 'http://192.168.0.106:3000';
-export const SOCKET_URL = 'wss://192.168.0.106:3000';
+export const BASE_URL = 'http://192.168.0.105:3000';
+export const SOCKET_URL = 'ws://192.168.0.105:3000';

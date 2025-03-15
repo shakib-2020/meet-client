@@ -42,5 +42,5 @@ export const peopleData = [
     photo: getRandomImage('women'),
   },
   {name: 'Hank', micOn: true, videoOn: false, photo: getRandomImage('men')},
-  {name: 'Ivy', micOn: false, videoOn: true, photo: getRandomImage('women')},
+  {name: 'Hank 2', micOn: true, videoOn: false, photo: getRandomImage('men')},
 ];

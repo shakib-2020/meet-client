@@ -153,6 +153,8 @@ const PrepareMeetScreen = () => {
   };
 
   const renderParticipantText = () => {
+    console.log(participants);
+
     if (participants?.length === 0) {
       return 'No one is in the call yet';
     }
