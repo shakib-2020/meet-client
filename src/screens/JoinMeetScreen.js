@@ -52,12 +52,12 @@ const JoinMeetScreen = () => {
         userId: user?.id,
         sessionId: removeHyphens(code),
       });
-      addSession(code);
-      addSessionId(code);
+      addSession(removeHyphens(code));
+      addSessionId(removeHyphens(code));
       navigate('PrepareMeetScreen');
     } else {
-      removeSession(code);
-      removeSessionId(code);
+      removeSession(removeHyphens(code));
+      removeSessionId(removeHyphens(code));
       setCode('');
       Alert.alert('There is no meeting found!');
     }

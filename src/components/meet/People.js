@@ -19,65 +19,60 @@ const People = ({people, containerDimensions}) => {
       )
     : {};
 
-  return (
-    <View style={peopleStyles.container}>
-      {visiblePeople?.map((person, index) => {
-        return (
-          <View
-            key={index}
-            style={[
-              peopleStyles.card,
-              person?.speaking
-                ? {
-                    borderWidth: 3,
-                  }
-                : null,
-              Array.isArray(gridStyle) ? gridStyle[index] : gridStyle,
-            ]}>
-            {person?.videoOn && person?.streamURL?.toURL() ? (
-              <RTCView
-                mirror
-                objectFit="cover"
-                streamURL={person?.streamURL?.toURL()}
-                style={peopleStyles.rtcVideo}
-              />
+  const renderParticipant = (person, index) => {
+    console.log('Rendering participant:', person.userId);
+    console.log('Video enabled:', person.videoOn);
+    console.log('Has stream:', person.streamURL);
+
+    if (person?.videoOn && person?.streamURL) {
+      console.log(
+        'Stream tracks:',
+        person.streamURL.getTracks().map(t => t.kind),
+      );
+      console.log('Stream URL:', person.streamURL.toURL());
+    }
+
+    return (
+      <View
+        key={person.userId}
+        style={[
+          peopleStyles.card,
+          person?.speaking ? {borderWidth: 3} : null,
+          Array.isArray(gridStyle) ? gridStyle[index] : gridStyle,
+        ]}>
+        {person?.videoOn && person?.streamURL ? (
+          <RTCView
+            mirror
+            objectFit="cover"
+            streamURL={person?.streamURL?.toURL()}
+            style={[peopleStyles.rtcVideo, {backgroundColor: '#242424'}]}
+            zOrder={1}
+          />
+        ) : (
+          <View style={peopleStyles.noVideo}>
+            {person?.photo ? (
+              <Image source={{uri: person?.photo}} style={peopleStyles.image} />
             ) : (
-              <View style={peopleStyles.noVideo}>
-                {person?.photo ? (
-                  <Image
-                    source={{uri: person?.photo}}
-                    style={peopleStyles.image}
-                  />
-                ) : (
-                  <Text style={peopleStyles.initial}>
-                    {person?.naem?.charAt(0)}
-                  </Text>
-                )}
-              </View>
-            )}
-            <Text style={peopleStyles.name}>{person?.name}</Text>
-            {!person?.micOn && (
-              <View style={peopleStyles.muted}>
-                <MicOff color={'#fff'} size={RFValue(10)} />
-              </View>
-            )}
-
-            <View style={peopleStyles.ellipsis}>
-              <EllipsisVertical color={'#fff'} size={RFValue(14)} />
-            </View>
-
-            {othersCount > 0 && index == visiblePeople?.length - 1 && (
-              <TouchableOpacity
-                style={[peopleStyles.others]}
-                activeOpacity={0.8}>
-                <Text style={peopleStyles.othersText}>
-                  {othersCount} others
-                </Text>
-              </TouchableOpacity>
+              <Text style={peopleStyles.initial}>
+                {person?.name?.charAt(0)}
+              </Text>
             )}
           </View>
-        );
-      })}
+        )}
+
+        <Text style={peopleStyles.name}>{person?.name}</Text>
+        {!person?.micOn && (
+          <View style={peopleStyles.muted}>
+            <MicOff color={'#fff'} size={RFValue(10)} />
+          </View>
+        )}
+      </View>
+    );
+  };
+
+  return (
+    <View style={peopleStyles.container}>
+      {visiblePeople?.map((person, index) => renderParticipant(person, index))}
     </View>
   );
 };
